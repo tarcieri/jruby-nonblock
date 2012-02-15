@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.version     = "0.0.0"
   gem.authors     = ["Tony Arcieri"]
   gem.email       = ["tony.arcieri@gmail.com"]
-  gem.homepage    = ""
+  gem.homepage    = "https://github.com/tarcieri/jruby-nonblock"
   gem.summary     = "Real non-blocking I/O support for JRuby 1.6"
   gem.description = gem.summary
 
@@ -15,5 +15,6 @@ Gem::Specification.new do |gem|
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.require_paths = ["lib"]
 
+  gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
 end
