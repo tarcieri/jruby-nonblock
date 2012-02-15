@@ -20,15 +20,16 @@ describe TCPSocket do
     peer.close
   end
   
-  it "supports non-blocking writes" do
-    subject.write_nonblock(payload).should == payload.length
-
-    loop do
-      begin
-        subject.write_nonblock(payload)
-      rescue Errno::EWOULDBLOCK
-        break
-      end
+  context :write_nonblock do
+    it "writes if the operation won't block" do
+      subject.write_nonblock(payload).should == payload.length
+      peer.read(payload.length).should == payload
+    end
+    
+    it "raises Errno::EWOULDBLOCK if the operation would block" do
+      expect do
+        loop { subject.write_nonblock(payload) }
+      end.to raise_exception(Errno::EWOULDBLOCK)
     end
   end
 end
