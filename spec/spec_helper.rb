@@ -1,0 +1,1 @@
+require 'jruby-nonblock'
