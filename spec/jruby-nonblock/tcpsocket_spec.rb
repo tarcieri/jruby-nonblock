@@ -1,35 +1,36 @@
 require 'spec_helper'
 
 describe TCPSocket do
-  let(:addr)     { "127.0.0.1" }
-  let(:tcp_port) { rand(10000) + 10000 }
-  let(:payload)  { "JUNK IN THE TUBES" }
-  let(:server)   { TCPServer.new addr, tcp_port }
-  let(:peer)     { server.accept }
-  
-  subject do
-    server
-    client = TCPSocket.new addr, tcp_port
-    peer
-    client
-  end
-  
-  after do
-    subject.close
-    server.close
-    peer.close
-  end
-  
-  context :write_nonblock do
+  describe '#write_nonblock' do
+    let(:payload) { 'JUNK IN THE TUBES' }
+
     it "writes if the operation won't block" do
-      subject.write_nonblock(payload).should == payload.length
-      peer.read(payload.length).should == payload
+      setup_tcp do |client, peer|
+        client.write_nonblock(payload).should eq payload.length
+        peer.read(payload.length).should eq payload
+      end
     end
     
     it "raises Errno::EWOULDBLOCK if the operation would block" do
-      expect do
-        loop { subject.write_nonblock(payload) }
-      end.to raise_exception(Errno::EWOULDBLOCK)
+      setup_tcp do |client, peer|
+        expect do
+          loop { client.write_nonblock(payload) }
+        end.to raise_exception(Errno::EWOULDBLOCK)
+      end
+    end
+
+    def setup_tcp(&block)
+      addr, tcp_port = '127.0.0.1', rand(10000) + 10000
+
+      server = TCPServer.new(addr, tcp_port)
+      client = TCPSocket.new(addr, tcp_port)
+      peer   = server.accept
+
+      block.call(client, peer)
+      
+      client.close
+      server.close
+      peer.close
     end
   end
 end
