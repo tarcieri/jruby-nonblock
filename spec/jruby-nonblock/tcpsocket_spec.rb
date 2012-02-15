@@ -10,7 +10,7 @@ describe TCPSocket do
         peer.read(payload.length).should eq payload
       end
     end
-    
+
     it "raises Errno::EWOULDBLOCK if the operation would block" do
       setup_tcp do |client, peer|
         expect do
@@ -27,7 +27,7 @@ describe TCPSocket do
       peer   = server.accept
 
       block.call(client, peer)
-      
+
       client.close
       server.close
       peer.close
